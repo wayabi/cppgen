@@ -7,7 +7,7 @@ else
 endif
 LIBS      = -lboost_system -lboost_regex 
 INCLUDE   = -I./include -I/home/pi/installed/boost_1_70_0
-TARGET    = ./a.out
+TARGET    = ./cppgen
 SRCDIR    = ./src
 ifeq "$(strip $(SRCDIR))" ""
   SRCDIR  = .

@@ -103,7 +103,7 @@ void header_info::parse(const char* path){
 	fclose(f);
 }
 
-bool header_info::make_cpp()
+bool header_info::make_cpp(bool force_overwrite)
 {
 	if(name_header_.size() == 0){
 		cerr << "invalid name_header:" << name_header_ << endl;
@@ -113,7 +113,7 @@ bool header_info::make_cpp()
 	ss_path_out << dir_header_ << "/" << name_header_ << ".cpp";
 	string s_path_out = ss_path_out.str();
 
-	if(Util::existFile(s_path_out.c_str())){
+	if(force_overwrite && Util::existFile(s_path_out.c_str())){
 		cerr << "already exist: " << s_path_out << endl;
 		return false;
 	}

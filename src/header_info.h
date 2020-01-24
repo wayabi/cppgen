@@ -25,7 +25,7 @@ public:
 
 public:
 	void parse(const char* path);
-	bool make_cpp();
+	bool make_cpp(bool force_overwrite);
 
 	static std::string get_class(const std::string& s);
 	static std::shared_ptr<func_info> get_func(const std::string& s);
