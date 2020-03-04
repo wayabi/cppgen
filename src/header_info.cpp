@@ -25,14 +25,15 @@ std::string header_info::get_class(const std::string& s)
 }
 
 std::shared_ptr<func_info> header_info::get_func(const std::string& s){
+	//\\S not space char
 	regex r("\\S+\\([^)]+\\)");
 	smatch m;
 	if(regex_search(s, m, r)){
 		int pos = m.position();
 		string name = m.str();
 		int pos_end = pos-2;
-		for(int i=pos_end;i>=0;--i){
-			if(*(s.c_str()+i) == ' '){
+		for(int i=pos_end;i>=-1;--i){
+			if(i==-1 || *(s.c_str()+i) == '\t'){
 				const char* c = s.c_str();
 				string returns = string(c+i+1, c+pos_end+1);
 				auto fi = make_shared<func_info>();
@@ -83,6 +84,7 @@ void header_info::parse(const char* path){
 	std::shared_ptr<func_info> func_info0 = nullptr;
 	while((ccc	= fgets(&buf[0], size_buf, f)) != NULL){
 		string s = Util::trim(string(&buf[0]));
+		cout << s << endl;
 		if(class_info_current == nullptr){
 			string name = get_class(s);
 			if(name.size() > 0){
@@ -113,7 +115,7 @@ bool header_info::make_cpp(bool force_overwrite)
 	ss_path_out << dir_header_ << "/" << name_header_ << ".cpp";
 	string s_path_out = ss_path_out.str();
 
-	if(force_overwrite && Util::existFile(s_path_out.c_str())){
+	if(!force_overwrite && Util::existFile(s_path_out.c_str())){
 		cerr << "already exist: " << s_path_out << endl;
 		return false;
 	}

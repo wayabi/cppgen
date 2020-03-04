@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 	const char* path = *(argv+1);
 
 	bool force = false;
-	if(argc > 3){
+	if(argc >= 3){
 		force = (atoi(*(argv+2)) == 1);
 	}
 
