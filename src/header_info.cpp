@@ -24,9 +24,9 @@ std::string header_info::get_class(const std::string& s)
 	return string("");
 }
 
-std::shared_ptr<func_info> header_info::get_func(const std::string& s){
+std::shared_ptr<func_info> header_info::get_func(const std::string& s, std::shared_ptr<class_info> class_info_current){
 	//\\S not space char
-	regex r("\\S+\\([^)]+\\)");
+	regex r("\\S+\\([^)]*\\)");
 	smatch m;
 	if(regex_search(s, m, r)){
 		int pos = m.position();
@@ -42,7 +42,18 @@ std::shared_ptr<func_info> header_info::get_func(const std::string& s){
 				return fi;
 			}
 		}
-
+	}
+	if(class_info_current != nullptr){
+		string class_name = class_info_current->name_class_;
+		regex r2(string("~?")+class_name + string("\\([^)]*\\)"));
+		smatch m;
+		if(regex_search(s, m, r2)){
+			int pos = m.position();
+			auto fi = make_shared<func_info>();
+			fi->name_func_ = m.str();
+			fi->return_func_ = "";
+			return fi;
+		}
 	}
 	return nullptr;
 }
@@ -93,7 +104,7 @@ void header_info::parse(const char* path){
 				class_info_current->name_class_ = name;
 				class_.push_back(class_info_current);
 			}
-		}else if((func_info0 = get_func(s)) != nullptr){
+		}else if((func_info0 = get_func(s, class_info_current)) != nullptr){
 			class_info_current->func_.push_back(func_info0);
 			cout << "func found:" << func_info0->name_func_ << endl;
 		}else if(is_end_of_class(s)){
@@ -138,7 +149,11 @@ bool header_info::make_cpp(bool force_overwrite)
 	fprintf(f, "\n");
 	for(auto ite = class_.begin();ite != class_.end();++ite){
 		for(auto ite2 = (*ite)->func_.begin();ite2 != (*ite)->func_.end();++ite2){
-			fprintf(f, "%s %s::%s\n{\n", (*ite2)->return_func_.c_str(), (*ite)->name_class_.c_str(), (*ite2)->name_func_.c_str());
+			if((*ite2)->return_func_.size() > 0){
+				fprintf(f, "%s %s::%s\n{\n", (*ite2)->return_func_.c_str(), (*ite)->name_class_.c_str(), (*ite2)->name_func_.c_str());
+			}else{
+				fprintf(f, "%s::%s\n{\n", (*ite)->name_class_.c_str(), (*ite2)->name_func_.c_str());
+			}
 			fprintf(f, "\n");
 			fprintf(f, "}\n");
 			fprintf(f, "\n");
