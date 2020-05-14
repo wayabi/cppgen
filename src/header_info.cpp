@@ -26,7 +26,7 @@ std::string header_info::get_class(const std::string& s)
 
 std::shared_ptr<func_info> header_info::get_func(const std::string& s){
 	//\\S not space char
-	regex r("\\S+\\([^)]+\\)");
+	regex r("\\S+\\([^)]*\\)");
 	smatch m;
 	if(regex_search(s, m, r)){
 		int pos = m.position();
